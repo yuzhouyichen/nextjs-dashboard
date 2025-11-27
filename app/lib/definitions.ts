@@ -1,7 +1,12 @@
+// 使用数据类型定义可以确保数据的一致性和正确性，避免插入数据库时数据格式不正确
+
+
+
 // This file contains type definitions for your data.
 // It describes the shape of the data, and what data type each property should accept.
 // For simplicity of teaching, we're manually defining these types.
 // However, these types are generated automatically if you're using an ORM such as Prisma.
+
 export type User = {
   id: string;
   name: string;
@@ -16,6 +21,7 @@ export type Customer = {
   image_url: string;
 };
 
+// 发票数据类型
 export type Invoice = {
   id: string;
   customer_id: string;
@@ -26,11 +32,13 @@ export type Invoice = {
   status: 'pending' | 'paid';
 };
 
+// 收入数据类型
 export type Revenue = {
   month: string;
   revenue: number;
 };
 
+// 最新发票数据类型
 export type LatestInvoice = {
   id: string;
   name: string;
@@ -53,7 +61,7 @@ export type InvoicesTable = {
   date: string;
   amount: number;
   status: 'pending' | 'paid';
-};
+}
 
 export type CustomersTableType = {
   id: string;
