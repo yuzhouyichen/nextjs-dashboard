@@ -1,4 +1,5 @@
 import postgres from 'postgres';
+// 用于定义数据库的结构。
 import {
   CustomerField,
   CustomersTableType,
@@ -9,8 +10,11 @@ import {
 } from './definitions';
 import { formatCurrency } from './utils';
 
-const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
+// 这是一个数据库连接的库，用于连接到数据库。
+const sql = postgres(process.env.POSTGRES_URL!, {});
 
+
+// 获取利润数据
 export async function fetchRevenue() {
   try {
     // Artificially delay a response for demo purposes.
@@ -30,6 +34,7 @@ export async function fetchRevenue() {
   }
 }
 
+// 获取最新发票数据
 export async function fetchLatestInvoices() {
   try {
     const data = await sql<LatestInvoiceRaw[]>`
@@ -39,6 +44,7 @@ export async function fetchLatestInvoices() {
       ORDER BY invoices.date DESC
       LIMIT 5`;
 
+    // 将金额转换为货币格式
     const latestInvoices = data.map((invoice) => ({
       ...invoice,
       amount: formatCurrency(invoice.amount),
@@ -50,6 +56,7 @@ export async function fetchLatestInvoices() {
   }
 }
 
+// 获取卡片数据
 export async function fetchCardData() {
   try {
     // You can probably combine these into a single SQL query
@@ -86,6 +93,8 @@ export async function fetchCardData() {
 }
 
 const ITEMS_PER_PAGE = 6;
+
+// 获取条件过滤后的发票数据
 export async function fetchFilteredInvoices(
   query: string,
   currentPage: number,
@@ -121,6 +130,8 @@ export async function fetchFilteredInvoices(
   }
 }
 
+
+// 获取发票页数
 export async function fetchInvoicesPages(query: string) {
   try {
     const data = await sql`SELECT COUNT(*)
@@ -142,6 +153,7 @@ export async function fetchInvoicesPages(query: string) {
   }
 }
 
+// 获取单个发票数据
 export async function fetchInvoiceById(id: string) {
   try {
     const data = await sql<InvoiceForm[]>`
@@ -167,6 +179,7 @@ export async function fetchInvoiceById(id: string) {
   }
 }
 
+// 获取所有客户数据
 export async function fetchCustomers() {
   try {
     const customers = await sql<CustomerField[]>`
@@ -184,6 +197,8 @@ export async function fetchCustomers() {
   }
 }
 
+
+// 获取条件过滤后的客户数据
 export async function fetchFilteredCustomers(query: string) {
   try {
     const data = await sql<CustomersTableType[]>`

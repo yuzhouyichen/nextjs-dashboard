@@ -1,17 +1,21 @@
+/* 这三行指令是 Tailwind CSS 的入口，让项目可以使用 Tailwind 的样式系统。 */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* 这个 CSS 规则用于确保数字输入框在 Firefox 和 WebKit 浏览器中显示为纯文本输入。 */
 input[type='number'] {
   -moz-appearance: textfield;
   appearance: textfield;
 }
 
+/* 这个 CSS 规则用于确保数字输入框在 WebKit 浏览器中显示为纯文本输入。 */
 input[type='number']::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
+/* 这个 CSS 规则用于确保数字输入框在 WebKit 浏览器中显示为纯文本输入。 */
 input[type='number']::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
