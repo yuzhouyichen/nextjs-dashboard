@@ -10,6 +10,7 @@ import {
 } from './definitions';
 import { formatCurrency } from './utils';
 
+
 // 这是一个数据库连接的库，用于连接到数据库。
 const sql = postgres(process.env.POSTGRES_URL!, {});
 
@@ -175,6 +176,7 @@ export async function fetchInvoiceById(id: string) {
       amount: invoice.amount / 100,
     }));
 
+    console.log('Invoice:', invoice);
     return invoice[0];
   } catch (error) {
     console.error('Database Error:', error);
