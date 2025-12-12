@@ -4,7 +4,10 @@ import { z } from 'zod';
 import postgres from 'postgres';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { AuthError } from 'next-auth';
+import { signIn, signOut } from '@/auth';
 
+// 连接到数据库
 const sql = postgres(process.env.POSTGRES_URL!, {});
 
 const FormSchema = z.object({
@@ -33,9 +36,10 @@ export type State = {
       status?: string[];
     };
     message?: string | null;
-  };
+};
 
-  export async function createInvoice(prevState: State, formData: FormData)  {
+// 创建发票
+export async function createInvoice(prevState: State, formData: FormData)  {
 
     // 验证表单数据，如果验证失败，返回错误信息。
     const validatedFields = CreateInvoice.safeParse({
@@ -117,4 +121,42 @@ export async function deleteInvoice(id: string) {
     // Since this action is being called in the /dashboard/invoices path, 
     // you don't need to call redirect. Calling revalidatePath will trigger a new server request and re-render the table.
     revalidatePath('/dashboard/invoices');
+}
+
+// 认证
+export async function authenticate(
+  prevState: string | undefined,
+  formData: FormData,
+) {
+  try {
+    console.log('formData', formData);
+    const email = formData.get('email')?.toString();
+    const password = formData.get('password')?.toString();
+    const callbackUrl = formData.get('callbackUrl')?.toString() || '/dashboard';
+    console.log('email', email);
+    console.log('password', password);
+    console.log('callbackUrl', callbackUrl);
+    // 认证
+    await signIn('credentials', {
+      email,
+      password,
+      redirectTo: callbackUrl,
+    });
+  } catch (error) {
+    console.log('error', error);
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case 'CredentialsSignin':
+          return 'Invalid credentials.';
+        default:
+          return 'Something went wrong.';
+      }
+    }
+    throw error;
+  }
+}
+
+// 登出
+export async function signOutAction() {
+  await signOut({ redirectTo: '/' });
 }
