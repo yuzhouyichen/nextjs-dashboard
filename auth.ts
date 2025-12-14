@@ -25,26 +25,20 @@ export const { auth, signIn, signOut } = NextAuth({
   providers: [
     Credentials({
       async authorize(credentials) {
-        console.log('credentials', credentials);
         // 解析认证凭证
         const parsedCredentials = z
           .object({ email: z.string().email(), password: z.string().min(6) })
           .safeParse(credentials);
-        console.log('parsedCredentials', parsedCredentials);
         // 如果解析成功，获取用户
         if (parsedCredentials.success) {
-          console.log('parsedCredentials.success');
           const { email, password } = parsedCredentials.data;
           // 数据库获取用户
           const user = await getUser(email);
-          console.log('user', user);
           // 如果用户不存在，返回 null
           if (!user) return null;
           // 比较密码，密码是明文，数据库中是哈希值，
           const passwordsMatch = await bcrypt.compare(password, user.password);
-          console.log('passwordsMatch', passwordsMatch);
           if (passwordsMatch) return user;
-          console.log('Invalid credentials');
         }
  
         return null;

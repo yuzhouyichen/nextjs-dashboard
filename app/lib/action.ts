@@ -130,20 +130,37 @@ export async function authenticate(
 ) {
   try {
     console.log('formData', formData);
+
     const email = formData.get('email')?.toString();
     const password = formData.get('password')?.toString();
+    // 获取回调URL，如果未获取到，则重定向到 /dashboard
     const callbackUrl = formData.get('callbackUrl')?.toString() || '/dashboard';
-    console.log('email', email);
-    console.log('password', password);
-    console.log('callbackUrl', callbackUrl);
+
+    console.log('formData', { email, callbackUrl });
     // 认证
     await signIn('credentials', {
       email,
       password,
       redirectTo: callbackUrl,
     });
+
+    // 如果认证成功，则重定向到 callbackUrl
+    if (callbackUrl) {
+      redirect(callbackUrl);
+    }
+
   } catch (error) {
     console.log('error', error);
+    console.log('error', error);
+    
+    // 检查是否是重定向错误（NEXT_REDIRECT），如果是则重新抛出，让 Next.js 处理
+    if (error && typeof error === 'object' && 'message' in error) {
+      const errorMessage = String(error.message);
+      if (errorMessage.includes('NEXT_REDIRECT')) {
+        throw error; // 重新抛出重定向错误，让 Next.js 处理
+      }
+    }
+    
     if (error instanceof AuthError) {
       switch (error.type) {
         case 'CredentialsSignin':
