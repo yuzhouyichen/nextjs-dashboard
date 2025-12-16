@@ -6,8 +6,11 @@ import { lusitana } from '@/app/ui/fonts';
 import { InvoicesTableSkeleton } from '@/app/ui/skeletons';
 import { Suspense } from 'react';
 import { fetchInvoicesPages } from '@/app/lib/data';
+import { Metadata } from 'next';
 
-
+export const metadata: Metadata = {
+  title: 'Invoices - wang qiang',
+};
 // 当searchParams发生变化时，页面会重新渲染
 export default async function Page(props: {
   searchParams?: Promise<{
