@@ -4,7 +4,11 @@
     "build": "next build",
     "dev": "next dev --turbopack",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "opennext:build": "opennextjs build",
+    "deploy": "npm run build && npm run opennext:build && wrangler deploy",
+    "deploy:preview": "npm run build && npm run opennext:build && wrangler deploy --env preview",
+    "cf:dev": "wrangler dev"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
@@ -29,7 +33,9 @@
     "@types/react": "19.0.7",
     "@types/react-dom": "19.0.3",
     "eslint": "^9.39.1",
-    "eslint-config-next": "^16.0.7"
+    "eslint-config-next": "^16.0.7",
+    "@opennextjs/cloudflare": "latest",
+    "wrangler": "latest"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

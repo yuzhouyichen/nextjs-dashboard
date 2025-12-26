@@ -4,16 +4,14 @@ import { authConfig } from './auth.config';
 import { z } from 'zod';
 import type { User } from '@/app/lib/definitions';
 import bcrypt from 'bcrypt';
-import postgres from 'postgres';
-
-// 连接到数据库
-const sql = postgres(process.env.POSTGRES_URL!, { });
+import { getDB } from '@/app/lib/db';
 
 // 获取用户
 async function getUser(email: string): Promise<User | undefined> {
   try {
-    const user = await sql<User[]>`SELECT * FROM users WHERE email=${email}`;
-    return user[0];
+    const db = getDB();
+    const users = await db.sql<User[]>`SELECT * FROM users WHERE email = ${email}`;
+    return users[0];
   } catch (error) {
     console.error('Failed to fetch user:', error);
     throw new Error('Failed to fetch user.');

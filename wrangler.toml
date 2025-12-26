@@ -1,0 +1,26 @@
+name = "nextjs-dashboard"
+compatibility_date = "2024-01-15"
+compatibility_flags = ["nodejs_compat"]
+
+# D1 数据库配置
+# 首先需要创建数据库：wrangler d1 create nextjs-dashboard-db
+[[d1_databases]]
+binding = "DB"
+database_name = "nextjs-dashboard-db"
+database_id = "your-database-id-here"  # 创建数据库后会得到，替换这里
+
+# 主环境配置（生产环境）
+[env.production]
+vars = { NODE_ENV = "production" }
+
+# 预览环境配置（可选，用于测试）
+[env.preview]
+vars = { NODE_ENV = "preview" }
+
+# 如果需要自定义域名，取消下面的注释并配置
+# [env.production.routes]
+# pattern = "yourdomain.com/*"
+# zone_name = "yourdomain.com"
+
+# 注意：敏感环境变量（如 NEXTAUTH_SECRET, POSTGRES_URL）应该使用 wrangler secret put 命令设置
+# 不要直接写在配置文件中

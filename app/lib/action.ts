@@ -1,14 +1,11 @@
 'use server';
 
 import { z } from 'zod';    
-import postgres from 'postgres';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { AuthError } from 'next-auth';
 import { signIn, signOut } from '@/auth';
-
-// 连接到数据库
-const sql = postgres(process.env.POSTGRES_URL!, {});
+import { getDB } from '@/app/lib/db';
 
 const FormSchema = z.object({
     id: z.string(),
@@ -64,10 +61,11 @@ export async function createInvoice(prevState: State, formData: FormData)  {
       const date = new Date().toISOString().split('T')[0];
       
       try {
-        await sql`
+        const db = getDB();
+        await db.sql`
                     INSERT INTO invoices (customer_id, amount, status, date)
                     VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
-                `;
+                `.run();
       } catch (error) {
         console.error('Database Error:', error);
         return { message: 'Database Error: Failed to Create Invoice.' };
@@ -97,11 +95,12 @@ export async function updateInvoice(id: string, prevState: State, formData: Form
     const amountInCents = amount * 100;
 
     try {
-        await sql`
+        const db = getDB();
+        await db.sql`
                     UPDATE invoices
                     SET customer_id = ${customerId}, amount = ${amountInCents}, status = ${status}
                     WHERE id = ${id}
-                `;
+                `.run();
     } catch (error) {
         console.error('Database Error:', error);
         return { message: 'Database Error: Failed to Update Invoice.' };
@@ -116,8 +115,8 @@ export async function deleteInvoice(id: string) {
 
     throw new Error('Failed to Delete Invoice');
 
-
-    await sql`DELETE FROM invoices WHERE id = ${id}`;
+    const db = getDB();
+    await db.sql`DELETE FROM invoices WHERE id = ${id}`.run();
     // Since this action is being called in the /dashboard/invoices path, 
     // you don't need to call redirect. Calling revalidatePath will trigger a new server request and re-render the table.
     revalidatePath('/dashboard/invoices');
